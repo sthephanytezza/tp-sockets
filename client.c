@@ -39,8 +39,9 @@ void connectionChat(int welcomeSocket){
 }
 
 int main(){
-    int welcomeSocket, connfd;
+    int welcomeSocket, connfd, port;
     struct sockaddr_in serverAddr, cli;
+    char IP[30];
 
     // cria o socket com três argumentos
     // 1) Internet domain 2) Stream socket 3) Default protocol (TCP in this case)
@@ -54,10 +55,18 @@ int main(){
 
     bzero(&serverAddr, sizeof(serverAddr));
 
+    printf("Informe a porta do servidor:\n");
+    scanf("%d", &port);
+
+    printf("Informe o IP do servidor:\n");
+    scanf("%[^\n]%*c", IP);
+
+    printf("\n");
+
     // instancia IP, PORT
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    serverAddr.sin_port = htons(PORT);
+    serverAddr.sin_addr.s_addr = inet_addr(IP);
+    serverAddr.sin_port = htons(port);
 
     // conecta o cliente socket ao servidor
     if (connect(welcomeSocket, (SA*)&serverAddr, sizeof(serverAddr)) != 0) {
