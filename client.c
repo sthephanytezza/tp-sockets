@@ -57,6 +57,7 @@ int main(){
 
     printf("Informe a porta do servidor:\n");
     scanf("%d", &port);
+    getchar();
 
     printf("Informe o IP do servidor:\n");
     scanf("%[^\n]%*c", IP);
