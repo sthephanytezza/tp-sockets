@@ -16,55 +16,62 @@ void sendfile(FILE *fp, int sockfd);
 
 int main(int argc, char* argv[])
 {
-
     if (argc != 3) 
     {
-        perror("[ERRO] Verifique o README e insira os argumentos necessários.");
+        perror("usage:send_file filepath <IPaddress>");
         exit(1);
     }
 
-
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd < 0) 
+    {
+        perror("Can't allocate sockfd");
+        exit(1);
+    }
 
     struct sockaddr_in serveraddr;
     memset(&serveraddr, 0, sizeof(serveraddr));
     serveraddr.sin_family = AF_INET;
     serveraddr.sin_port = htons(SERVERPORT);
-    if (inet_pton(AF_INET, argv[2], &serveraddr.sin_addr) < 0)
+    if (inet_pton(AF_INET, argv[2], &serveraddr.sin_addr) < 0
     {
-        perror("[ERRO] Verifique o endereço IP");
+        perror("IPaddress Convert Error");
         exit(1);
     }
-
 
     if (connect(sockfd, (const struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0)
     {
-        perror("[ERRO] Problema na conexão.");
+        perror("Connect Error");
         exit(1);
     }
     
-
-    char *filename = basename(argv[1]);
+    char *filename = basename(argv[1])
     if (filename == NULL)
     {
-        perror("[ERRO] Verifique o nome do arquivo.");
+        perror("Can't get filename");
         exit(1);
     }
     
+    /*发送文件名
+      为了将文件名一次发送出去，而不是暂存到TCP发送缓冲区中，避免对方收到多余的数据，不好解析正确的文件名，
+      需要将要发送的数据大小设置为缓冲区大小*/
     char buff[BUFFSIZE] = {0};
     strncpy(buff, filename, strlen(filename));
-
+    if (send(sockfd, buff, BUFFSIZE, 0) == -1)
+    {
+        perror("Can't send filename");
+        exit(1);
+    }
+    
     FILE *fp = fopen(argv[1], "rb");
     if (fp == NULL) 
     {
-        perror("[ERRO] Não foi possível abrir o arquivo.");
+        perror("Can't open file");
         exit(1);
     }
 
-
     sendfile(fp, sockfd);
-    puts("[SUCESSO] Arquivo enviado.");
-
+    puts("Send Success");
 
     fclose(fp);
     close(sockfd);
@@ -73,22 +80,22 @@ int main(int argc, char* argv[])
 
 void sendfile(FILE *fp, int sockfd) 
 {
-    int n;
-    char sendline[MAX_LINE] = {0};
+    int n
+    char sendline[MAX_LINE] = {0}
     while ((n = fread(sendline, sizeof(char), MAX_LINE, fp)) > 0) 
     {
-        if (n != MAX_LINE && ferror(fp))
+        if (n != MAX_LINE && ferror(fp)
         {
-            perror("[ERRO] Não foi possível ler o arquivo.");
+            perror("Read File Error");
             exit(1);
         }
         
-    
+
         if (send(sockfd, sendline, n, 0) == -1)
         {
-            perror("[ERRO] Não foi possível enviar o arquivo.");
+            perror("Can't send file");
             exit(1);
         }
-        memset(sendline, 0, MAX_LINE);
+        memset(sendline, 0, MAX_LINE)
     }
 }
