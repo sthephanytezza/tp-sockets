@@ -46,15 +46,15 @@ int main(int argc, char *argv[])
     }
 
     socklen_t addrlen = sizeof(clientaddr);
-    int connfd = accept(sockfd, (struct sockaddr *) &clientaddr, &addrlen)
+    int connfd = accept(sockfd, (struct sockaddr *) &clientaddr, &addrlen);
     if (connfd == -1) 
     {
         perror("Connect Error");
         exit(1);
     }
-    close(sockfd)
+    close(sockfd);
 
-    char filename[BUFFSIZE] = {0}
+    char filename[BUFFSIZE] = {0};
     if (recv(connfd, filename, BUFFSIZE, 0) == -1) 
     {
         perror("Can't receive filename");
@@ -80,8 +80,8 @@ int main(int argc, char *argv[])
 
 void writefile(int sockfd, FILE *fp)
 {
-    ssize_t n
-    char buff[MAX_LINE] = {0}
+    ssize_t n;
+    char buff[MAX_LINE] = {0};
     while ((n = recv(sockfd, buff, MAX_LINE, 0)) > 0) 
     {
         if (n == -1)
@@ -96,6 +96,6 @@ void writefile(int sockfd, FILE *fp)
             perror("Write File Error");
             exit(1);
         }
-        memset(buff, 0, MAX_LINE)
+        memset(buff, 0, MAX_LINE);
     }
 }

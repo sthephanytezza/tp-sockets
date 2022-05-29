@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
     memset(&serveraddr, 0, sizeof(serveraddr));
     serveraddr.sin_family = AF_INET;
     serveraddr.sin_port = htons(SERVERPORT);
-    if (inet_pton(AF_INET, argv[2], &serveraddr.sin_addr) < 0
+    if (inet_pton(AF_INET, argv[2], &serveraddr.sin_addr) < 0)
     {
         perror("IPaddress Convert Error");
         exit(1);
@@ -45,16 +45,13 @@ int main(int argc, char* argv[])
         exit(1);
     }
     
-    char *filename = basename(argv[1])
+    char *filename = basename(argv[1]);
     if (filename == NULL)
     {
         perror("Can't get filename");
         exit(1);
     }
     
-    /*发送文件名
-      为了将文件名一次发送出去，而不是暂存到TCP发送缓冲区中，避免对方收到多余的数据，不好解析正确的文件名，
-      需要将要发送的数据大小设置为缓冲区大小*/
     char buff[BUFFSIZE] = {0};
     strncpy(buff, filename, strlen(filename));
     if (send(sockfd, buff, BUFFSIZE, 0) == -1)
@@ -80,11 +77,11 @@ int main(int argc, char* argv[])
 
 void sendfile(FILE *fp, int sockfd) 
 {
-    int n
-    char sendline[MAX_LINE] = {0}
+    int n;
+    char sendline[MAX_LINE] = {0};
     while ((n = fread(sendline, sizeof(char), MAX_LINE, fp)) > 0) 
     {
-        if (n != MAX_LINE && ferror(fp)
+        if (n != MAX_LINE && ferror(fp))
         {
             perror("Read File Error");
             exit(1);
@@ -96,6 +93,6 @@ void sendfile(FILE *fp, int sockfd)
             perror("Can't send file");
             exit(1);
         }
-        memset(sendline, 0, MAX_LINE)
+        memset(sendline, 0, MAX_LINE);
     }
 }
