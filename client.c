@@ -97,7 +97,7 @@ void redirect(int welcomeSocket){
                 printf("\tServidor responde: : %s", buffer);
         }
 
-    } while(strncmp(buffer, "0", 1) == 2);
+    } while(strncmp(buffer, "2", 1) == 0);
 
     printf("Encerrando conexão com servidor...\n");
 }
